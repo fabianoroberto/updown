@@ -60,11 +60,18 @@ class Client {
 	 */
 	public function request(string $endpoint, string $method = 'GET', array $params = []) : array
 	{
+		$query = '';
+
+		if (!empty($params)) {
+		    $query = '?' . http_build_query($params);
+		    $query = preg_replace('/%5B[0-9]+%5D/simU', '%5B%5D', $query);
+		}
+
 		$curl = curl_init();
 		curl_setopt_array($curl, [
 			CURLOPT_CUSTOMREQUEST	=> $method,
 			CURLOPT_RETURNTRANSFER	=> 1,
-			CURLOPT_URL           	=> self::BASE_URL . $endpoint . (empty($params) ? '' : '?' . http_build_query($params)),
+			CURLOPT_URL           	=> self::BASE_URL . $endpoint . $query,
 			CURLOPT_HTTPHEADER    	=> [
 				'X-API-KEY: ' . $this->api_key
 			]
